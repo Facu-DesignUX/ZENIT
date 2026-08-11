@@ -17,7 +17,7 @@
     <ServiceWorker Include="wwwroot\service-worker.js" PublishedContent="wwwroot\service-worker.published.js" />
   </ItemGroup>
 
-	<Target Name="CompileTailwind" BeforeTargets="BeforeBuild">
+	<Target Name="CompileTailwind" BeforeTargets="BeforeBuild" Condition="'$(Configuration)' == 'Debug'">
 		<Message Importance="high" Text="Compilando estilos con el motor global de Tailwind..." />
 		<Exec Command="tailwindcss -i .\Styles\app.css -o .\wwwroot\css\site.css --minify" />
 	</Target>
