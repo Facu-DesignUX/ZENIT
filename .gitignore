@@ -1,9 +1,32 @@
-Plan/
-bin/
-obj/
-.vs/
+## User-specific files
+*.rsuser
+*.suo
 *.user
 *.userosscache
 *.sln.docstates
-.paket/
-.paket-files/
+
+## User-specific files (Mono)
+*.userprefs
+
+## Build results
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+x64/
+x86/
+[Ww][Aa][Rr][Mm][Uu][Pp]/
+[Tt]humbnails/
+amd64/
+arm/
+arm64/
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+
+## Visual Studio 
+.vs/
+
+## Custom Folders
+Plan/
