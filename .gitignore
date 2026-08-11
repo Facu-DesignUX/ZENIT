@@ -1,1 +1,9 @@
 Plan/
+bin/
+obj/
+.vs/
+*.user
+*.userosscache
+*.sln.docstates
+.paket/
+.paket-files/
