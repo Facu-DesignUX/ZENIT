@@ -1,0 +1,147 @@
+@using ZENIT.Blazor.Services
+@inject PlayerStateService PlayerState
+@inject FavoritesService Favorites
+@inject IJSRuntime JSRuntime
+@implements IDisposable
+
+@if (PlayerState.CurrentStation != null)
+{
+    <div class="hidden lg:flex fixed bottom-0 left-0 right-0 h-28 bg-black/80 backdrop-blur-3xl border-t border-white/10 z-[60] items-center justify-between px-8 transition-transform duration-500 transform translate-y-0 shadow-[0_-10px_40px_rgba(0,0,0,0.5)]">
+        
+        <!-- Left: Station Info -->
+        <div class="flex items-center gap-6 w-1/3 h-full relative">
+            @if (!string.IsNullOrEmpty(PlayerState.CurrentStation.Favicon))
+            {
+                <img src="@PlayerState.CurrentStation.Favicon" alt="Cover" class="w-24 h-24 rounded-2xl object-cover shadow-2xl absolute -top-8 border-4 border-[#09090b]" onerror="this.style.display='none'" />
+            }
+            <div class="flex flex-col ml-32">
+                <span class="text-white text-lg font-extrabold truncate">@PlayerState.CurrentStation.Name</span>
+                <span class="text-gray-400 text-sm truncate mt-1">@PlayerState.CurrentStation.Country</span>
+            </div>
+        </div>
+
+        <!-- Center: Controls -->
+        <div class="flex flex-col items-center justify-center w-1/3 gap-3">
+            <div class="flex items-center gap-6">
+                
+                <!-- Botón Favoritos -->
+                <button @onclick="ToggleFavorite" class="text-gray-400 hover:text-white hover:scale-110 transition-all">
+                    @if (Favorites.IsFavorite(PlayerState.CurrentStation.StationUuid))
+                    {
+                        <svg class="w-7 h-7 text-white drop-shadow-md" fill="currentColor" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+                    }
+                    else
+                    {
+                        <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path></svg>
+                    }
+                </button>
+
+                <!-- Play/Pause Button -->
+                <button @onclick="TogglePlay" class="w-14 h-14 rounded-full bg-white text-black flex items-center justify-center hover:scale-105 transition-transform shadow-[0_0_20px_rgba(255,255,255,0.2)]">
+                    @if (PlayerState.IsBuffering)
+                    {
+                        <svg class="w-6 h-6 animate-spin" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                    }
+                    else if (PlayerState.IsPlaying)
+                    {
+                        <svg class="w-7 h-7" fill="currentColor" viewBox="0 0 24 24"><path d="M6 4h4v16H6zm8 0h4v16h-4z"/></svg>
+                    }
+                    else
+                    {
+                        <!-- Fixed alignment with ml-[3px] -->
+                        <svg class="w-8 h-8 ml-[3px]" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                    }
+                </button>
+
+                <!-- Next Button (Conectado) -->
+                <button @onclick="PlayNext" class="text-gray-400 hover:text-white hover:scale-110 transition-all">
+                    <svg class="w-7 h-7" fill="currentColor" viewBox="0 0 24 24"><path d="M5 4v16l12-8L5 4zm14 0h2v16h-2V4z"/></svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- Right: Actions (Waves & Volume) -->
+        <div class="flex items-center justify-end w-1/3 gap-8">
+            @if (PlayerState.HasError)
+            {
+                <span class="text-red-500 text-sm font-medium">Stream no disponible</span>
+            }
+
+            <!-- Audio Wave Animation -->
+            <div class="flex items-center gap-1 h-6 justify-center">
+                @for(int i=0; i<7; i++)
+                {
+                    var delay = (i * 0.15).ToString(System.Globalization.CultureInfo.InvariantCulture);
+                    var dur = (0.8 + (i % 3) * 0.2).ToString(System.Globalization.CultureInfo.InvariantCulture);
+                    var animationStyle = (PlayerState.IsPlaying && !PlayerState.IsBuffering) 
+                        ? $"animation: wave {dur}s ease-in-out infinite {delay}s;"
+                        : "";
+                    
+                    <div class="w-1 rounded-full transition-all duration-300 @(PlayerState.IsPlaying && !PlayerState.IsBuffering ? "bg-white h-5" : "bg-gray-600 h-1")" 
+                         style="@animationStyle"></div>
+                }
+            </div>
+            
+            <!-- Mute Toggle -->
+            <button @onclick="ToggleMute" class="text-gray-400 hover:text-white transition-colors">
+                @if (isMuted)
+                {
+                    <svg class="w-7 h-7 text-red-400" fill="currentColor" viewBox="0 0 24 24"><path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/></svg>
+                }
+                else
+                {
+                    <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"></path></svg>
+                }
+            </button>
+        </div>
+    </div>
+}
+
+@code {
+    private bool isMuted = false;
+
+    protected override void OnInitialized()
+    {
+        PlayerState.OnStateChanged += HandleStateChanged;
+        Favorites.OnFavoritesChanged += HandleStateChanged;
+    }
+
+    private void HandleStateChanged()
+    {
+        InvokeAsync(StateHasChanged);
+    }
+
+    private async Task TogglePlay()
+    {
+        await PlayerState.TogglePlayPauseAsync();
+    }
+
+    private async Task ToggleFavorite()
+    {
+        if (PlayerState.CurrentStation != null)
+        {
+            await Favorites.ToggleFavoriteAsync(PlayerState.CurrentStation);
+        }
+    }
+
+    private async Task PlayNext()
+    {
+        await PlayerState.PlayNextAsync();
+    }
+
+    private async Task ToggleMute()
+    {
+        isMuted = !isMuted;
+        // set volume 0 if muted, 1 if unmuted
+        await JSRuntime.InvokeVoidAsync("ZenitAudioPlayer.setVolume", isMuted ? 0 : 1);
+    }
+
+    public void Dispose()
+    {
+        PlayerState.OnStateChanged -= HandleStateChanged;
+        Favorites.OnFavoritesChanged -= HandleStateChanged;
+    }
+}

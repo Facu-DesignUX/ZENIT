@@ -1,0 +1,155 @@
+@using ZENIT.Blazor.Services
+@inject PlayerStateService PlayerState
+@inject FavoritesService Favorites
+@implements IDisposable
+
+@if (PlayerState.CurrentStation != null && PlayerState.IsImmersiveMode)
+{
+    <div class="fixed inset-0 z-[60] flex flex-col bg-black lg:hidden animate-[slideUp_0.3s_ease-out]">
+        
+        <!-- Fondo Masivo Blur -->
+        @if (!string.IsNullOrEmpty(PlayerState.CurrentStation.Favicon))
+        {
+            <div class="absolute inset-0 bg-cover bg-center opacity-40 blur-[100px] scale-110" style="background-image: url('@PlayerState.CurrentStation.Favicon')"></div>
+        }
+        else
+        {
+            <div class="absolute inset-0 bg-zenit-gradient opacity-20 blur-[100px]"></div>
+        }
+
+        <!-- Capa Oscura de contraste -->
+        <div class="absolute inset-0 bg-black/40"></div>
+
+        <!-- Contenido -->
+        <div class="relative z-10 flex flex-col h-full w-full px-6 py-safe pt-8 pb-20">
+            
+            <!-- Header: Minimizar -->
+            <div class="flex items-center justify-between w-full mb-8">
+                <button @onclick="Close" class="p-2 -ml-2 text-white hover:text-gray-300">
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                </button>
+                <span class="text-xs tracking-[0.2em] font-bold text-gray-300 uppercase">Transmitiendo</span>
+                <div class="w-8"></div> <!-- Spacer -->
+            </div>
+
+            <!-- Portada Principal -->
+            <div class="flex-1 flex flex-col items-center justify-center w-full max-h-[35vh]">
+                @if (!string.IsNullOrEmpty(PlayerState.CurrentStation.Favicon))
+                {
+                    <img src="@PlayerState.CurrentStation.Favicon" alt="Cover" class="w-full h-full aspect-square object-contain rounded-3xl shadow-2xl shadow-black/50" onerror="this.style.display='none'" />
+                }
+                else
+                {
+                    <div class="w-full h-full aspect-square bg-zenit-gradient rounded-3xl shadow-2xl flex items-center justify-center">
+                        <span class="text-white text-9xl font-extrabold opacity-50">@PlayerState.CurrentStation.Name.Substring(0,1).ToUpper()</span>
+                    </div>
+                }
+            </div>
+
+            <!-- Metadatos y Controles -->
+            <div class="mt-8 flex flex-col gap-6">
+                <!-- Textos -->
+                <div>
+                    <h2 class="text-3xl font-extrabold text-white truncate drop-shadow-md">@PlayerState.CurrentStation.Name</h2>
+                    <p class="text-gray-300 text-lg drop-shadow-sm">@PlayerState.CurrentStation.Country</p>
+                </div>
+
+                <!-- Onda Visual en vez de progreso -->
+                <div class="w-full h-12 flex items-center justify-center gap-1.5 opacity-80">
+                    @for(int i=0; i<15; i++)
+                    {
+                        var delay = ((i % 5) * 0.15).ToString(System.Globalization.CultureInfo.InvariantCulture);
+                        var dur = (0.8 + (i % 3) * 0.2).ToString(System.Globalization.CultureInfo.InvariantCulture);
+                        var animationStyle = (PlayerState.IsPlaying && !PlayerState.IsBuffering) 
+                            ? $"animation: wave {dur}s ease-in-out infinite {delay}s;"
+                            : "";
+                        
+                        <div class="w-1.5 rounded-full transition-all duration-300 @(PlayerState.IsPlaying && !PlayerState.IsBuffering ? "bg-white h-8" : "bg-gray-500 h-1")" 
+                             style="@animationStyle"></div>
+                    }
+                </div>
+
+                <!-- Botonera -->
+                <div class="flex items-center justify-center gap-6 mt-4 mb-8">
+                    <!-- Botón Corazón -->
+                    <button @onclick="ToggleFavorite" class="text-gray-400 hover:text-white transition-all">
+                        @if (Favorites.IsFavorite(PlayerState.CurrentStation.StationUuid))
+                        {
+                            <svg class="w-8 h-8 text-white drop-shadow-md" fill="currentColor" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+                        }
+                        else
+                        {
+                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path></svg>
+                        }
+                    </button>
+
+                    <!-- Play/Pause Button -->
+                    <button @onclick="TogglePlay" class="w-20 h-20 rounded-full bg-white text-black flex items-center justify-center hover:scale-105 transition-transform shadow-[0_0_40px_rgba(255,255,255,0.3)]">
+                        @if (PlayerState.IsBuffering)
+                        {
+                            <svg class="w-8 h-8 animate-spin text-zenit-primary" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                        }
+                        else if (PlayerState.IsPlaying)
+                        {
+                            <svg class="w-10 h-10" fill="currentColor" viewBox="0 0 24 24"><path d="M6 4h4v16H6zm8 0h4v16h-4z"/></svg>
+                        }
+                        else
+                        {
+                            <svg class="w-10 h-10 ml-[4px]" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                        }
+                    </button>
+
+                    <!-- Botón Next -->
+                    <button @onclick="PlayNext" class="text-gray-400 hover:text-white transition-all">
+                        <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24"><path d="M5 4v16l12-8L5 4zm14 0h2v16h-2V4z"/></svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    protected override void OnInitialized()
+    {
+        PlayerState.OnStateChanged += HandleStateChanged;
+        Favorites.OnFavoritesChanged += HandleStateChanged;
+    }
+
+    private void HandleStateChanged()
+    {
+        InvokeAsync(StateHasChanged);
+    }
+
+    private void Close()
+    {
+        PlayerState.CloseImmersiveMode();
+    }
+
+    private async Task TogglePlay()
+    {
+        await PlayerState.TogglePlayPauseAsync();
+    }
+
+    private async Task ToggleFavorite()
+    {
+        if (PlayerState.CurrentStation != null)
+        {
+            await Favorites.ToggleFavoriteAsync(PlayerState.CurrentStation);
+        }
+    }
+
+    private async Task PlayNext()
+    {
+        await PlayerState.PlayNextAsync();
+    }
+
+    public void Dispose()
+    {
+        PlayerState.OnStateChanged -= HandleStateChanged;
+        Favorites.OnFavoritesChanged -= HandleStateChanged;
+    }
+}

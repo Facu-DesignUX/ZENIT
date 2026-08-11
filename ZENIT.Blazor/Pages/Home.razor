@@ -1,7 +1,223 @@
-﻿@page "/"
+@page "/"
+@using ZENIT.Blazor.Models
+@using ZENIT.Blazor.Services
+@using ZENIT.Blazor.Components
+@inject RadioApiService RadioApi
+@implements IDisposable
 
-<PageTitle>Home</PageTitle>
+<PageTitle>Inicio - ZENIT</PageTitle>
 
-<h1>Hello, world!</h1>
+<div class="flex flex-col gap-8 pb-10">
 
-Welcome to your new app.
+    @if (hasNetworkError)
+    {
+        <!-- Estado de Error de Red / Offline -->
+        <div class="flex flex-col items-center justify-center mt-20 text-center px-4">
+            <svg class="w-24 h-24 text-red-500 mb-6 drop-shadow-lg animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+            <h3 class="text-3xl font-black text-white mb-2">No pudimos conectar</h3>
+            <p class="text-gray-400 text-lg max-w-md mb-8">Parece que hay un problema con tu conexión a internet o los servidores de radio están saturados.</p>
+            <button @onclick="LoadDataAsync" disabled="@isLoading" class="px-8 py-3 rounded-full bg-white text-black font-bold text-lg hover:scale-105 transition-transform disabled:opacity-50 flex items-center gap-3">
+                @if (isLoading)
+                {
+                    <svg class="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    <span>Reconectando...</span>
+                }
+                else
+                {
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                    <span>Reintentar</span>
+                }
+            </button>
+        </div>
+    }
+    else
+    {
+        <!-- SECCIÓN: TOP GLOBALES -->
+        @if (topGlobal == null || topGlobal.Count > 0)
+        {
+            <section>
+                <h2 class="text-2xl font-bold text-white mb-4 px-1">Mejores Globales</h2>
+                <div class="flex overflow-x-auto gap-4 pb-4 snap-x snap-mandatory hide-scrollbar">
+                    @if (topGlobal == null)
+                    {
+                        @for (int i = 0; i < 6; i++)
+                        {
+                            <div class="animate-pulse bg-white/5 rounded-2xl w-40 md:w-48 aspect-square flex-shrink-0 snap-start"></div>
+                        }
+                    }
+                    else
+                    {
+                        @foreach (var station in topGlobal)
+                        {
+                            <div class="w-40 md:w-48 flex-shrink-0 snap-start">
+                                <RadioCard Station="station" PlaylistContext="topGlobal" />
+                            </div>
+                        }
+                    }
+                </div>
+            </section>
+        }
+
+        <!-- SECCIÓN: HECHO EN ARGENTINA -->
+        @if (topArgentina == null || topArgentina.Count > 0)
+        {
+            <section>
+                <h2 class="text-2xl font-bold text-white mb-4 px-1">Hecho en Argentina 🇦🇷</h2>
+                <div class="flex overflow-x-auto gap-4 pb-4 snap-x snap-mandatory hide-scrollbar">
+                    @if (topArgentina == null)
+                    {
+                        @for (int i = 0; i < 6; i++)
+                        {
+                            <div class="animate-pulse bg-white/5 rounded-2xl w-40 md:w-48 aspect-square flex-shrink-0 snap-start"></div>
+                        }
+                    }
+                    else
+                    {
+                        @foreach (var station in topArgentina)
+                        {
+                            <div class="w-40 md:w-48 flex-shrink-0 snap-start">
+                                <RadioCard Station="station" PlaylistContext="topArgentina" />
+                            </div>
+                        }
+                    }
+                </div>
+            </section>
+        }
+
+        <!-- SECCIÓN: FLOW REGGAETON & URBANO -->
+        @if (topReggaeton == null || topReggaeton.Count > 0)
+        {
+            <section>
+                <h2 class="text-2xl font-bold text-white mb-4 px-1">Flow Reggaeton & Urbano 🔥</h2>
+                <div class="flex overflow-x-auto gap-4 pb-4 snap-x snap-mandatory hide-scrollbar">
+                    @if (topReggaeton == null)
+                    {
+                        @for (int i = 0; i < 6; i++)
+                        {
+                            <div class="animate-pulse bg-white/5 rounded-2xl w-40 md:w-48 aspect-square flex-shrink-0 snap-start"></div>
+                        }
+                    }
+                    else
+                    {
+                        @foreach (var station in topReggaeton)
+                        {
+                            <div class="w-40 md:w-48 flex-shrink-0 snap-start">
+                                <RadioCard Station="station" PlaylistContext="topReggaeton" />
+                            </div>
+                        }
+                    }
+                </div>
+            </section>
+        }
+
+        <!-- SECCIÓN: HIP HOP VIBES -->
+        @if (topHipHop == null || topHipHop.Count > 0)
+        {
+            <section>
+                <h2 class="text-2xl font-bold text-white mb-4 px-1">Hip Hop Vibes 🎧</h2>
+                <div class="flex overflow-x-auto gap-4 pb-4 snap-x snap-mandatory hide-scrollbar">
+                    @if (topHipHop == null)
+                    {
+                        @for (int i = 0; i < 6; i++)
+                        {
+                            <div class="animate-pulse bg-white/5 rounded-2xl w-40 md:w-48 aspect-square flex-shrink-0 snap-start"></div>
+                        }
+                    }
+                    else
+                    {
+                        @foreach (var station in topHipHop)
+                        {
+                            <div class="w-40 md:w-48 flex-shrink-0 snap-start">
+                                <RadioCard Station="station" PlaylistContext="topHipHop" />
+                            </div>
+                        }
+                    }
+                </div>
+            </section>
+        }
+    }
+
+</div>
+
+<style>
+    .hide-scrollbar::-webkit-scrollbar {
+        display: none;
+    }
+    .hide-scrollbar {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+</style>
+
+@code {
+    private List<RadioStation>? topGlobal;
+    private List<RadioStation>? topArgentina;
+    private List<RadioStation>? topReggaeton;
+    private List<RadioStation>? topHipHop;
+
+    private bool hasNetworkError = false;
+    private bool isLoading = false;
+    private CancellationTokenSource? _cts;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDataAsync();
+    }
+
+    private async Task LoadDataAsync()
+    {
+        _cts?.Cancel();
+        _cts?.Dispose();
+        _cts = new CancellationTokenSource();
+        var token = _cts.Token;
+
+        isLoading = true;
+        hasNetworkError = false;
+        
+        // Reset state
+        topGlobal = null;
+        topArgentina = null;
+        topReggaeton = null;
+        topHipHop = null;
+        StateHasChanged();
+
+        try
+        {
+            // Cargar secuencialmente
+            topGlobal = await RadioApi.GetTopVotedStationsAsync(15, token);
+            StateHasChanged();
+            
+            topArgentina = await RadioApi.GetStationsByCountryAsync("Argentina", 15, token);
+            StateHasChanged();
+            
+            topReggaeton = await RadioApi.GetStationsByTagAsync("reggaeton", 15, token);
+            StateHasChanged();
+            
+            topHipHop = await RadioApi.GetStationsByTagAsync("hip hop", 15, token);
+
+            // Verificamos si TODO falló (indicativo de que no hay internet en absoluto)
+            if (topGlobal.Count == 0 && topArgentina.Count == 0 && topReggaeton.Count == 0 && topHipHop.Count == 0)
+            {
+                hasNetworkError = true;
+            }
+        }
+        catch (TaskCanceledException)
+        {
+            // Ignorar cancelación intencional
+        }
+        finally
+        {
+            isLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    public void Dispose()
+    {
+        _cts?.Cancel();
+        _cts?.Dispose();
+    }
+}

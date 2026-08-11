@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\facun\\Desktop\\Proyectos VS\\ZENIT\\ZENIT.Blazor\\ZENIT.Blazor.csproj": {}
+    "C:\\Users\\facun\\Desktop\\Proyectos VS\\ZENIT\\ZENIT.blazor\\ZENIT.Blazor.csproj": {}
   },
   "projects": {
-    "C:\\Users\\facun\\Desktop\\Proyectos VS\\ZENIT\\ZENIT.Blazor\\ZENIT.Blazor.csproj": {
+    "C:\\Users\\facun\\Desktop\\Proyectos VS\\ZENIT\\ZENIT.blazor\\ZENIT.Blazor.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\facun\\Desktop\\Proyectos VS\\ZENIT\\ZENIT.Blazor\\ZENIT.Blazor.csproj",
+        "projectUniqueName": "C:\\Users\\facun\\Desktop\\Proyectos VS\\ZENIT\\ZENIT.blazor\\ZENIT.Blazor.csproj",
         "projectName": "ZENIT.Blazor",
-        "projectPath": "C:\\Users\\facun\\Desktop\\Proyectos VS\\ZENIT\\ZENIT.Blazor\\ZENIT.Blazor.csproj",
+        "projectPath": "C:\\Users\\facun\\Desktop\\Proyectos VS\\ZENIT\\ZENIT.blazor\\ZENIT.Blazor.csproj",
         "packagesPath": "C:\\Users\\facun\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\facun\\Desktop\\Proyectos VS\\ZENIT\\ZENIT.Blazor\\obj\\",
+        "outputPath": "C:\\Users\\facun\\Desktop\\Proyectos VS\\ZENIT\\ZENIT.blazor\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

@@ -1,0 +1,94 @@
+@using ZENIT.Blazor.Services
+@inject PlayerStateService PlayerState
+@implements IDisposable
+
+@if (PlayerState.CurrentStation != null && !PlayerState.IsImmersiveMode)
+{
+    <div class="lg:hidden fixed bottom-[72px] left-4 right-4 z-50">
+        <!-- Contenedor Píldora -->
+        <div @onclick="OpenImmersive" class="bg-black/70 backdrop-blur-xl border border-white/10 rounded-full h-14 flex items-center justify-between px-2 pr-4 shadow-2xl shadow-zenit-primary/20 cursor-pointer overflow-hidden relative">
+            
+            <!-- Dynamic Background Blur inside the pill -->
+            @if (!string.IsNullOrEmpty(PlayerState.CurrentStation.Favicon))
+            {
+                <div class="absolute inset-0 opacity-30 bg-cover bg-center blur-md" style="background-image: url('@PlayerState.CurrentStation.Favicon')"></div>
+            }
+
+            <div class="flex items-center gap-3 relative z-10 w-[70%]">
+                @if (!string.IsNullOrEmpty(PlayerState.CurrentStation.Favicon))
+                {
+                    <img src="@PlayerState.CurrentStation.Favicon" alt="Cover" class="w-10 h-10 rounded-full object-cover shadow-md" onerror="this.style.display='none'" />
+                }
+                else
+                {
+                    <div class="w-10 h-10 rounded-full bg-zenit-gradient flex items-center justify-center">
+                        <span class="text-white text-sm font-bold">@PlayerState.CurrentStation.Name.Substring(0,1).ToUpper()</span>
+                    </div>
+                }
+                
+                <div class="flex flex-col overflow-hidden">
+                    <span class="text-white font-bold text-sm truncate">@PlayerState.CurrentStation.Name</span>
+                    @if (PlayerState.HasError)
+                    {
+                        <span class="text-red-400 text-xs truncate">Error de conexión</span>
+                    }
+                    else
+                    {
+                        <span class="text-gray-300 text-xs truncate">
+                            @(PlayerState.IsBuffering ? "Conectando..." : "Transmitiendo en vivo")
+                        </span>
+                    }
+                </div>
+            </div>
+
+            <!-- Controles relativos al Z-index -->
+            <div class="relative z-10 flex items-center gap-2" @onclick:stopPropagation>
+                <!-- Play/Pause -->
+                <button @onclick="TogglePlay" class="w-10 h-10 rounded-full bg-white text-black flex items-center justify-center">
+                    @if (PlayerState.IsBuffering)
+                    {
+                        <svg class="w-5 h-5 animate-spin text-zenit-primary" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                    }
+                    else if (PlayerState.IsPlaying)
+                    {
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M6 4h4v16H6zm8 0h4v16h-4z"/></svg>
+                    }
+                    else
+                    {
+                        <svg class="w-5 h-5 ml-0.5" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                    }
+                </button>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    protected override void OnInitialized()
+    {
+        PlayerState.OnStateChanged += HandleStateChanged;
+    }
+
+    private void HandleStateChanged()
+    {
+        InvokeAsync(StateHasChanged);
+    }
+
+    private void OpenImmersive()
+    {
+        PlayerState.ToggleImmersiveMode();
+    }
+
+    private async Task TogglePlay()
+    {
+        await PlayerState.TogglePlayPauseAsync();
+    }
+
+    public void Dispose()
+    {
+        PlayerState.OnStateChanged -= HandleStateChanged;
+    }
+}

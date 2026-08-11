@@ -18,33 +18,57 @@ build_property.EntryPointFilePath =
 build_property._SupportedPlatformList = browser
 build_property.RootNamespace = ZENIT.Blazor
 build_property.RootNamespace = ZENIT.Blazor
-build_property.ProjectDir = C:\Users\facun\Desktop\Proyectos VS\ZENIT\ZENIT.Blazor\
+build_property.ProjectDir = C:\Users\facun\Desktop\Proyectos VS\ZENIT\ZENIT.blazor\
 build_property.EnableComHosting = 
 build_property.EnableGeneratedComInterfaceComImportInterop = false
 build_property.RazorLangVersion = 10.0
 build_property.SupportLocalizedComponentNames = 
 build_property.GenerateRazorMetadataSourceChecksumAttributes = 
-build_property.MSBuildProjectDirectory = C:\Users\facun\Desktop\Proyectos VS\ZENIT\ZENIT.Blazor
+build_property.MSBuildProjectDirectory = C:\Users\facun\Desktop\Proyectos VS\ZENIT\ZENIT.blazor
 build_property._RazorSourceGeneratorDebug = 
 build_property.EffectiveAnalysisLevelStyle = 10.0
 build_property.EnableCodeStyleSeverity = 
 
-[C:/Users/facun/Desktop/Proyectos VS/ZENIT/ZENIT.Blazor/App.razor]
+[C:/Users/facun/Desktop/Proyectos VS/ZENIT/ZENIT.blazor/App.razor]
 build_metadata.AdditionalFiles.TargetPath = QXBwLnJhem9y
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/facun/Desktop/Proyectos VS/ZENIT/ZENIT.Blazor/Layout/MainLayout.razor]
+[C:/Users/facun/Desktop/Proyectos VS/ZENIT/ZENIT.blazor/Components/DesktopPlayer.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xEZXNrdG9wUGxheWVyLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/facun/Desktop/Proyectos VS/ZENIT/ZENIT.blazor/Components/ImmersivePlayer.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xJbW1lcnNpdmVQbGF5ZXIucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/facun/Desktop/Proyectos VS/ZENIT/ZENIT.blazor/Components/MiniPlayer.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xNaW5pUGxheWVyLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/facun/Desktop/Proyectos VS/ZENIT/ZENIT.blazor/Components/RadioCard.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xSYWRpb0NhcmQucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/facun/Desktop/Proyectos VS/ZENIT/ZENIT.blazor/Layout/MainLayout.razor]
 build_metadata.AdditionalFiles.TargetPath = TGF5b3V0XE1haW5MYXlvdXQucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/facun/Desktop/Proyectos VS/ZENIT/ZENIT.Blazor/Pages/Home.razor]
+[C:/Users/facun/Desktop/Proyectos VS/ZENIT/ZENIT.blazor/Pages/Buscar.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQnVzY2FyLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/facun/Desktop/Proyectos VS/ZENIT/ZENIT.blazor/Pages/Favoritos.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcRmF2b3JpdG9zLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/facun/Desktop/Proyectos VS/ZENIT/ZENIT.blazor/Pages/Home.razor]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcSG9tZS5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/facun/Desktop/Proyectos VS/ZENIT/ZENIT.Blazor/Pages/NotFound.razor]
+[C:/Users/facun/Desktop/Proyectos VS/ZENIT/ZENIT.blazor/Pages/NotFound.razor]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcTm90Rm91bmQucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/facun/Desktop/Proyectos VS/ZENIT/ZENIT.Blazor/_Imports.razor]
+[C:/Users/facun/Desktop/Proyectos VS/ZENIT/ZENIT.blazor/_Imports.razor]
 build_metadata.AdditionalFiles.TargetPath = X0ltcG9ydHMucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 

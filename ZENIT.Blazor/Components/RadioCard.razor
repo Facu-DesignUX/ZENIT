@@ -1,0 +1,125 @@
+@using ZENIT.Blazor.Models
+@using ZENIT.Blazor.Services
+@inject PlayerStateService PlayerState
+@inject FavoritesService Favorites
+
+<div class="relative group rounded-2xl overflow-hidden bg-white/5 border border-white/10 backdrop-blur-md transition-all duration-300 hover:scale-[1.03] hover:bg-white/10 hover:border-white/20 hover:shadow-2xl hover:shadow-white/10 cursor-pointer flex flex-col aspect-square md:aspect-[4/5] min-w-[140px]">
+    
+    <!-- Imagen o Fallback -->
+    <div class="relative flex-1 w-full h-full bg-black/40 overflow-hidden" @onclick="PlayStation">
+        @if (!string.IsNullOrEmpty(Station.Favicon) && !hasImageError)
+        {
+            <img src="@Station.Favicon" alt="@Station.Name" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" @onerror="HandleImageError" />
+        }
+        else
+        {
+            <!-- Fallback: Zero-Flicker Gradient -->
+            <div class="w-full h-full bg-zenit-gradient flex items-center justify-center">
+                <span class="text-white text-5xl font-extrabold opacity-50">
+                    @(string.IsNullOrEmpty(Station.Name) ? "Z" : Station.Name.Substring(0, 1).ToUpper())
+                </span>
+            </div>
+        }
+
+        <!-- Overlay Oscuro en Hover y Botón Play -->
+        <div class="absolute inset-0 bg-black/0 group-hover:bg-black/50 transition-colors duration-300 flex items-center justify-center">
+            <div class="w-12 h-12 md:w-14 md:h-14 rounded-full bg-white text-black flex items-center justify-center opacity-0 group-hover:opacity-100 transform translate-y-4 group-hover:translate-y-0 transition-all duration-300 shadow-lg">
+                @if (PlayerState.CurrentStation?.StationUuid == Station.StationUuid && PlayerState.IsBuffering)
+                {
+                    <svg class="w-6 h-6 animate-spin" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                }
+                else if (PlayerState.CurrentStation?.StationUuid == Station.StationUuid && PlayerState.IsPlaying)
+                {
+                    <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M6 4h4v16H6zm8 0h4v16h-4z"/></svg>
+                }
+                else
+                {
+                    <svg class="w-7 h-7 ml-1" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z" /></svg>
+                }
+            </div>
+        </div>
+
+        <!-- Botón Corazón (Favoritos) -->
+        <button @onclick="ToggleFavorite" @onclick:stopPropagation class="absolute top-3 right-3 p-2 rounded-full bg-black/40 backdrop-blur-md border border-white/10 text-white hover:scale-110 hover:bg-black/60 transition-all opacity-100 lg:opacity-0 lg:group-hover:opacity-100 shadow-lg z-10">
+            @if (Favorites.IsFavorite(Station.StationUuid))
+            {
+                <!-- Corazón Blanco Sólido -->
+                <svg class="w-5 h-5 text-white drop-shadow-md" fill="currentColor" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+            }
+            else
+            {
+                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path></svg>
+            }
+        </button>
+    </div>
+
+    <!-- Metadatos (Footer de la tarjeta) -->
+    <div class="p-4 flex flex-col justify-between h-24 bg-gradient-to-t from-black/80 to-transparent absolute bottom-0 w-full pointer-events-none">
+        <div>
+            <h3 class="text-white font-bold truncate text-base leading-tight drop-shadow-md">@Station.Name</h3>
+            <div class="flex items-center gap-2 mt-1">
+                <span class="text-xs text-gray-300 truncate drop-shadow-md">
+                    @(string.IsNullOrEmpty(Station.Country) ? "Global" : Station.Country)
+                </span>
+                @if (Station.Votes > 0)
+                {
+                    <span class="text-[10px] bg-white/20 text-white px-2 py-0.5 rounded-full backdrop-blur-sm shadow-sm pointer-events-auto">
+                        @Station.Votes ❤️
+                    </span>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter, EditorRequired]
+    public RadioStation Station { get; set; } = default!;
+
+    [Parameter]
+    public IReadOnlyList<RadioStation>? PlaylistContext { get; set; }
+
+    private bool hasImageError = false;
+
+    protected override void OnInitialized()
+    {
+        PlayerState.OnStateChanged += HandleStateChanged;
+        Favorites.OnFavoritesChanged += HandleStateChanged;
+    }
+
+    private void HandleStateChanged()
+    {
+        InvokeAsync(StateHasChanged);
+    }
+
+    private async Task PlayStation()
+    {
+        if (PlayerState.CurrentStation?.StationUuid == Station.StationUuid)
+        {
+            await PlayerState.TogglePlayPauseAsync();
+        }
+        else
+        {
+            await PlayerState.PlayAsync(Station, PlaylistContext);
+        }
+    }
+
+    private async Task ToggleFavorite()
+    {
+        await Favorites.ToggleFavoriteAsync(Station);
+    }
+
+    private void HandleImageError()
+    {
+        hasImageError = true;
+    }
+
+    public void Dispose()
+    {
+        PlayerState.OnStateChanged -= HandleStateChanged;
+        Favorites.OnFavoritesChanged -= HandleStateChanged;
+    }
+}

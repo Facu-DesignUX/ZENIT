@@ -1,0 +1,153 @@
+@page "/buscar"
+@using ZENIT.Blazor.Models
+@using ZENIT.Blazor.Services
+@using ZENIT.Blazor.Components
+@inject RadioApiService RadioApi
+@implements IDisposable
+
+<PageTitle>Buscar - ZENIT</PageTitle>
+
+<div class="flex flex-col gap-6 w-full max-w-7xl mx-auto pb-10">
+    
+    <!-- Título y Caja de Búsqueda -->
+    <div class="flex flex-col gap-4">
+        <h1 class="text-4xl font-extrabold tracking-tight text-white drop-shadow-md">
+            Descubre <span class="text-transparent bg-clip-text bg-zenit-gradient">Nueva Música</span>
+        </h1>
+        
+        <div class="relative w-full group">
+            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                <svg class="w-6 h-6 text-gray-400 group-focus-within:text-zenit-primary transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+            </div>
+            <input 
+                type="text" 
+                class="w-full bg-white/5 border border-white/10 rounded-2xl py-4 pl-12 pr-4 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-zenit-primary/50 focus:border-zenit-primary/50 focus:bg-white/10 transition-all text-lg shadow-inner" 
+                placeholder="Busca por estación, género, país..."
+                @bind="SearchQuery" 
+                @bind:event="oninput" />
+            
+            @if (IsSearching)
+            {
+                <div class="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">
+                    <svg class="w-6 h-6 animate-spin text-zenit-primary" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                </div>
+            }
+        </div>
+    </div>
+
+    <!-- Sugerencias o Resultados -->
+    @if (string.IsNullOrWhiteSpace(SearchQuery))
+    {
+        <!-- Estado Vacío: Sugerencias -->
+        <div class="mt-8 flex flex-col gap-4">
+            <h3 class="text-xl font-bold text-white">Explorar Géneros</h3>
+            <div class="flex flex-wrap gap-3">
+                @foreach (var tag in new[] { "Pop", "Rock", "Reggaeton", "Hip Hop", "Urbano", "Jazz", "Electronic", "Classical", "Cumbia", "Indie", "Metal", "K-Pop", "News", "Sports" })
+                {
+                    <button @onclick="() => SetSearchQuery(tag)" class="px-5 py-2.5 rounded-full bg-white/5 border border-white/10 text-gray-300 font-medium hover:bg-white/10 hover:text-white hover:border-white/30 transition-all shadow-sm">
+                        @tag
+                    </button>
+                }
+            </div>
+        </div>
+    }
+    else
+    {
+        <!-- Resultados -->
+        @if (SearchResults != null && SearchResults.Any())
+        {
+            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4 mt-6">
+                @foreach (var station in SearchResults)
+                {
+                    <RadioCard Station="station" PlaylistContext="SearchResults" />
+                }
+            </div>
+        }
+        else if (!IsSearching)
+        {
+            <!-- Sin Resultados -->
+            <div class="flex flex-col items-center justify-center mt-20 opacity-50 text-center">
+                <svg class="w-24 h-24 text-gray-500 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                <h3 class="text-2xl font-bold text-white">No encontramos nada</h3>
+                <p class="text-gray-400 mt-2">Intenta buscar con otras palabras o géneros.</p>
+            </div>
+        }
+    }
+
+</div>
+
+@code {
+    private string _searchQuery = "";
+    private string SearchQuery
+    {
+        get => _searchQuery;
+        set
+        {
+            if (_searchQuery != value)
+            {
+                _searchQuery = value;
+                _ = OnSearchInputChangedAsync();
+            }
+        }
+    }
+
+    private List<RadioStation>? SearchResults;
+    private bool IsSearching = false;
+    private CancellationTokenSource? _cts;
+
+    private async Task OnSearchInputChangedAsync()
+    {
+        // Cancel previous request
+        _cts?.Cancel();
+        _cts?.Dispose();
+        
+        if (string.IsNullOrWhiteSpace(_searchQuery))
+        {
+            SearchResults = null;
+            IsSearching = false;
+            StateHasChanged();
+            return;
+        }
+
+        _cts = new CancellationTokenSource();
+        var token = _cts.Token;
+        IsSearching = true;
+        StateHasChanged();
+
+        try
+        {
+            // Debounce delay
+            await Task.Delay(500, token);
+
+            if (!token.IsCancellationRequested)
+            {
+                var results = await RadioApi.SearchStationsAsync(_searchQuery, 50, token);
+                
+                if (!token.IsCancellationRequested)
+                {
+                    SearchResults = results;
+                    IsSearching = false;
+                    StateHasChanged();
+                }
+            }
+        }
+        catch (TaskCanceledException)
+        {
+            // Ignore cancellation
+        }
+    }
+
+    private void SetSearchQuery(string query)
+    {
+        SearchQuery = query;
+    }
+
+    public void Dispose()
+    {
+        _cts?.Cancel();
+        _cts?.Dispose();
+    }
+}

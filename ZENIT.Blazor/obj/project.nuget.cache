@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "aU0qzij9l9k=",
+  "dgSpecHash": "CQLxo46YD08=",
   "success": true,
-  "projectFilePath": "C:\\Users\\facun\\Desktop\\Proyectos VS\\ZENIT\\ZENIT.Blazor\\ZENIT.Blazor.csproj",
+  "projectFilePath": "C:\\Users\\facun\\Desktop\\Proyectos VS\\ZENIT\\ZENIT.blazor\\ZENIT.Blazor.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\facun\\.nuget\\packages\\microsoft.aspnetcore.app.internal.assets\\10.0.10\\microsoft.aspnetcore.app.internal.assets.10.0.10.nupkg.sha512",
     "C:\\Users\\facun\\.nuget\\packages\\microsoft.aspnetcore.authorization\\10.0.10\\microsoft.aspnetcore.authorization.10.0.10.nupkg.sha512",

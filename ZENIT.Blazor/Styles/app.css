@@ -1,3 +1,37 @@
-﻿@import "tailwindcss";
+@import "tailwindcss";
 @source "../**/*.razor";
 @source "../**/*.html";
+
+/* --- IDENTIDAD ZENIT (Tailwind v4) --- */
+@theme {
+    /* Tipografía Base */
+    --font-sans: "Outfit", ui-sans-serif, system-ui, sans-serif;
+
+    /* Paleta Extraída del Logo */
+    --color-zenit-primary: #e6007e;   /* Magenta/Rosa vibrante oscuro */
+    --color-zenit-secondary: #ff8c00; /* Naranja/Ámbar luminoso */
+    --color-zenit-dark: #4a0414;      /* Borgoña/Maroon profundo */
+}
+
+/* --- UTILIDADES PERSONALIZADAS --- */
+@utility zenit-gradient {
+    background: linear-gradient(to right, var(--color-zenit-primary), var(--color-zenit-secondary));
+}
+
+/* --- ESTILOS BASE (Estado Cero / Idle) --- */
+@layer base {
+    body {
+        @apply bg-[#09090b] text-white antialiased selection:bg-zenit-primary/50;
+    }
+}
+
+/* --- ANIMACIONES GLOBALES --- */
+@keyframes wave {
+    0%, 100% { transform: scaleY(0.5); opacity: 0.5; }
+    50% { transform: scaleY(1.5); opacity: 1; }
+}
+
+@keyframes slideUp {
+    from { transform: translateY(100%); }
+    to { transform: translateY(0); }
+}
