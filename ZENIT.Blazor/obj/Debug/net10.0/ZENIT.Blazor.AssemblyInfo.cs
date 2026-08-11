@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("ZENIT.Blazor")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+8e1e9915e506a2435d26fecd8afc694b259d7fa1")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+e28e25087b34b9a6f95a439052af04537dcc1dae")]
 [assembly: System.Reflection.AssemblyProductAttribute("ZENIT.Blazor")]
 [assembly: System.Reflection.AssemblyTitleAttribute("ZENIT.Blazor")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
