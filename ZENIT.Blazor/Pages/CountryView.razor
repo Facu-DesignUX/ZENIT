@@ -18,7 +18,7 @@
 
     <!-- Música -->
     <section class="mt-4">
-        <h2 class="text-2xl font-bold text-white mb-4 px-1">Música y Populares 🎶</h2>
+        <h2 class="text-2xl font-bold text-white mb-4 px-1">Música y Populares</h2>
         <div class="flex overflow-x-auto gap-4 pb-4 snap-x snap-mandatory hide-scrollbar">
             @if (musicStations == null)
             {
@@ -42,7 +42,7 @@
 
     <!-- Géneros Locales -->
     <section>
-        <h2 class="text-2xl font-bold text-white mb-4 px-1">Géneros en @CountryName 🗂️</h2>
+        <h2 class="text-2xl font-bold text-white mb-4 px-1">Géneros en @CountryName</h2>
         <div class="flex overflow-x-auto gap-4 pb-4 snap-x snap-mandatory hide-scrollbar">
             <CategoryCard Title="Pop" Emoji="✨" Link="@($"/country/{Uri.EscapeDataString(CountryName)}/genre/pop")" BackgroundClass="bg-gradient-to-br from-fuchsia-500 to-pink-600" />
             <CategoryCard Title="Rock" Emoji="🎸" Link="@($"/country/{Uri.EscapeDataString(CountryName)}/genre/rock")" BackgroundClass="bg-gradient-to-br from-zinc-700 to-black" />
@@ -61,7 +61,7 @@
 
     <!-- Noticias -->
     <section>
-        <h2 class="text-2xl font-bold text-white mb-4 px-1">Noticias 📰</h2>
+        <h2 class="text-2xl font-bold text-white mb-4 px-1">Noticias</h2>
         <div class="flex overflow-x-auto gap-4 pb-4 snap-x snap-mandatory hide-scrollbar">
             @if (newsStations == null)
             {
@@ -85,7 +85,7 @@
 
     <!-- Podcasts -->
     <section>
-        <h2 class="text-2xl font-bold text-white mb-4 px-1">Podcasts y Charlas 🎙️</h2>
+        <h2 class="text-2xl font-bold text-white mb-4 px-1">Podcasts y Charlas</h2>
         <div class="flex overflow-x-auto gap-4 pb-4 snap-x snap-mandatory hide-scrollbar">
             @if (podcastStations == null)
             {
