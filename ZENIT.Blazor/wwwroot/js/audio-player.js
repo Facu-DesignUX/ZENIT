@@ -1,5 +1,8 @@
 window.ZenitAudioPlayer = {
     audio: null,
+    audioContext: null,
+    gainNode: null,
+    source: null,
     dotNetRef: null,
 
     initialize: function (dotNetReference) {
@@ -10,8 +13,26 @@ window.ZenitAudioPlayer = {
         if (!this.audio) {
             this.audio = document.createElement('audio');
             this.audio.id = 'zenit-audio';
-            this.audio.crossOrigin = 'anonymous';
+            this.audio.crossOrigin = 'anonymous'; // Important for Web Audio API
             document.body.appendChild(this.audio);
+        }
+
+        // Initialize Web Audio API for Gain Control (up to 200%)
+        if (!this.audioContext) {
+            const AudioContext = window.AudioContext || window.webkitAudioContext;
+            this.audioContext = new AudioContext();
+            this.source = this.audioContext.createMediaElementSource(this.audio);
+            this.gainNode = this.audioContext.createGain();
+            this.gainNode.gain.value = 1.0;
+            this.source.connect(this.gainNode);
+            this.gainNode.connect(this.audioContext.destination);
+            
+            // Resume context on play to comply with autoplay policies
+            this.audio.addEventListener('play', () => {
+                if (this.audioContext && this.audioContext.state === 'suspended') {
+                    this.audioContext.resume();
+                }
+            });
         }
 
         // Attach event listeners using direct assignment to prevent duplicate listeners on hot reload
@@ -96,9 +117,11 @@ window.ZenitAudioPlayer = {
     },
 
     setVolume: function (volume) {
-        if (this.audio) {
-            // volume must be between 0.0 and 1.0
-            this.audio.volume = Math.max(0, Math.min(1, volume));
+        if (this.gainNode) {
+            // volume can be up to 2.0 (200%)
+            this.gainNode.gain.value = Math.max(0, Math.min(2.0, volume));
+        } else if (this.audio) {
+            this.audio.volume = Math.max(0, Math.min(1.0, volume));
         }
     }
 };

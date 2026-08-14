@@ -69,43 +69,68 @@
                     }
                 </div>
 
-                <!-- Botonera -->
-                <div class="flex items-center justify-center gap-6 mt-4 mb-8">
-                    <!-- Botón Corazón -->
-                    <button @onclick="ToggleFavorite" class="text-gray-400 hover:text-white transition-all">
-                        @if (Favorites.IsFavorite(PlayerState.CurrentStation.StationUuid))
-                        {
-                            <svg class="w-8 h-8 text-white drop-shadow-md" fill="currentColor" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
-                        }
-                        else
-                        {
-                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path></svg>
-                        }
-                    </button>
+                <!-- Botonera y Volumen -->
+                <div class="flex flex-col items-center gap-8 mt-4 mb-8 w-full">
+                    <!-- Controles Principales -->
+                    <div class="flex items-center justify-center gap-8">
+                        <!-- Botón Corazón -->
+                        <button @onclick="ToggleFavorite" class="text-gray-400 hover:text-white transition-all">
+                            @if (Favorites.IsFavorite(PlayerState.CurrentStation.StationUuid))
+                            {
+                                <svg class="w-8 h-8 text-white drop-shadow-md" fill="currentColor" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+                            }
+                            else
+                            {
+                                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path></svg>
+                            }
+                        </button>
 
-                    <!-- Play/Pause Button -->
-                    <button @onclick="TogglePlay" class="w-20 h-20 rounded-full bg-white text-black flex items-center justify-center hover:scale-105 transition-transform shadow-[0_0_40px_rgba(255,255,255,0.3)]">
-                        @if (PlayerState.IsBuffering)
-                        {
-                            <svg class="w-8 h-8 animate-spin text-zenit-primary" fill="none" viewBox="0 0 24 24">
-                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                            </svg>
-                        }
-                        else if (PlayerState.IsPlaying)
-                        {
-                            <svg class="w-10 h-10" fill="currentColor" viewBox="0 0 24 24"><path d="M6 4h4v16H6zm8 0h4v16h-4z"/></svg>
-                        }
-                        else
-                        {
-                            <svg class="w-10 h-10 ml-[4px]" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-                        }
-                    </button>
+                        <!-- Play/Pause Button -->
+                        <button @onclick="TogglePlay" class="w-20 h-20 rounded-full bg-white text-black flex items-center justify-center hover:scale-105 transition-transform shadow-[0_0_40px_rgba(255,255,255,0.3)]">
+                            @if (PlayerState.IsBuffering)
+                            {
+                                <svg class="w-8 h-8 animate-spin text-zenit-primary" fill="none" viewBox="0 0 24 24">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                </svg>
+                            }
+                            else if (PlayerState.IsPlaying)
+                            {
+                                <svg class="w-10 h-10" fill="currentColor" viewBox="0 0 24 24"><path d="M6 4h4v16H6zm8 0h4v16h-4z"/></svg>
+                            }
+                            else
+                            {
+                                <svg class="w-10 h-10 ml-[4px]" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                            }
+                        </button>
 
-                    <!-- Botón Next -->
-                    <button @onclick="PlayNext" class="text-gray-400 hover:text-white transition-all">
-                        <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24"><path d="M5 4v16l12-8L5 4zm14 0h2v16h-2V4z"/></svg>
-                    </button>
+                        <!-- Botón Next -->
+                        <button @onclick="PlayNext" class="text-gray-400 hover:text-white transition-all">
+                            <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24"><path d="M5 4v16l12-8L5 4zm14 0h2v16h-2V4z"/></svg>
+                        </button>
+                    </div>
+
+                    <!-- Volume Control -->
+                    <div class="flex items-center gap-4 w-3/4 max-w-xs mt-2">
+                        <button @onclick="ToggleMute" class="text-gray-400 hover:text-white transition-colors">
+                            @if (PlayerState.Volume == 0)
+                            {
+                                <svg class="w-6 h-6 text-red-400" fill="currentColor" viewBox="0 0 24 24"><path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/></svg>
+                            }
+                            else if (PlayerState.Volume > 1.0f)
+                            {
+                                <svg class="w-6 h-6 text-zenit-primary" fill="currentColor" viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>
+                            }
+                            else
+                            {
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"></path></svg>
+                            }
+                        </button>
+                        <input type="range" min="0" max="2" step="0.05" 
+                               value="@PlayerState.Volume.ToString(System.Globalization.CultureInfo.InvariantCulture)"
+                               @oninput="OnVolumeChange" 
+                               class="w-full accent-zenit-primary h-2 bg-white/20 rounded-lg appearance-none cursor-pointer" />
+                    </div>
                 </div>
             </div>
         </div>
@@ -145,6 +170,29 @@
     private async Task PlayNext()
     {
         await PlayerState.PlayNextAsync();
+    }
+
+    private float previousVolume = 1.0f;
+
+    private async Task ToggleMute()
+    {
+        if (PlayerState.Volume > 0)
+        {
+            previousVolume = PlayerState.Volume;
+            await PlayerState.SetVolumeAsync(0);
+        }
+        else
+        {
+            await PlayerState.SetVolumeAsync(previousVolume > 0 ? previousVolume : 1.0f);
+        }
+    }
+
+    private async Task OnVolumeChange(ChangeEventArgs e)
+    {
+        if (float.TryParse(e.Value?.ToString(), System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out float vol))
+        {
+            await PlayerState.SetVolumeAsync(vol);
+        }
     }
 
     public void Dispose()

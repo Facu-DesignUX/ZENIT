@@ -1,0 +1,168 @@
+@page "/country/{CountryName}"
+@using ZENIT.Blazor.Models
+@using ZENIT.Blazor.Services
+@using ZENIT.Blazor.Components
+@inject RadioApiService RadioApi
+@implements IDisposable
+
+<PageTitle>@CountryName - ZENIT</PageTitle>
+
+<div class="flex flex-col gap-8 pb-10 w-full max-w-7xl mx-auto px-2 md:px-6">
+    <!-- Header -->
+    <div class="flex items-center gap-4 mt-4">
+        <a href="/" class="p-2 rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors shrink-0">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+        </a>
+        <h1 class="text-3xl md:text-5xl font-extrabold text-white drop-shadow-md tracking-tight truncate">Directo desde <span class="text-transparent bg-clip-text bg-zenit-gradient">@CountryName</span></h1>
+    </div>
+
+    <!-- Música -->
+    <section class="mt-4">
+        <h2 class="text-2xl font-bold text-white mb-4 px-1">Música y Populares 🎶</h2>
+        <div class="flex overflow-x-auto gap-4 pb-4 snap-x snap-mandatory hide-scrollbar">
+            @if (musicStations == null)
+            {
+                @for (int i = 0; i < 6; i++) { <div class="animate-pulse bg-white/5 rounded-2xl w-40 md:w-48 aspect-square flex-shrink-0 snap-start"></div> }
+            }
+            else if (!musicStations.Any())
+            {
+                <span class="text-gray-500 italic px-2">No se encontraron emisoras.</span>
+            }
+            else
+            {
+                @foreach (var station in musicStations)
+                {
+                    <div class="w-40 md:w-48 flex-shrink-0 snap-start">
+                        <RadioCard Station="station" PlaylistContext="musicStations" />
+                    </div>
+                }
+            }
+        </div>
+    </section>
+
+    <!-- Géneros Locales -->
+    <section>
+        <h2 class="text-2xl font-bold text-white mb-4 px-1">Géneros en @CountryName 🗂️</h2>
+        <div class="flex overflow-x-auto gap-4 pb-4 snap-x snap-mandatory hide-scrollbar">
+            <CategoryCard Title="Pop" Emoji="✨" Link="@($"/country/{Uri.EscapeDataString(CountryName)}/genre/pop")" BackgroundClass="bg-gradient-to-br from-fuchsia-500 to-pink-600" />
+            <CategoryCard Title="Rock" Emoji="🎸" Link="@($"/country/{Uri.EscapeDataString(CountryName)}/genre/rock")" BackgroundClass="bg-gradient-to-br from-zinc-700 to-black" />
+            <CategoryCard Title="Reggaeton" Emoji="🔥" Link="@($"/country/{Uri.EscapeDataString(CountryName)}/genre/reggaeton")" BackgroundClass="bg-gradient-to-br from-purple-500 to-pink-500" />
+            <CategoryCard Title="Folklore" Emoji="🪕" Link="@($"/country/{Uri.EscapeDataString(CountryName)}/genre/folklore")" BackgroundClass="bg-gradient-to-br from-amber-600 to-orange-700" />
+            <CategoryCard Title="Electrónica" Emoji="⚡" Link="@($"/country/{Uri.EscapeDataString(CountryName)}/genre/electronic")" BackgroundClass="bg-gradient-to-br from-cyan-400 to-blue-600" />
+            <CategoryCard Title="Hip Hop" Emoji="🎧" Link="@($"/country/{Uri.EscapeDataString(CountryName)}/genre/hip hop")" BackgroundClass="bg-gradient-to-br from-orange-500 to-red-600" />
+            <CategoryCard Title="Cumbia" Emoji="💃" Link="@($"/country/{Uri.EscapeDataString(CountryName)}/genre/cumbia")" BackgroundClass="bg-gradient-to-br from-yellow-400 to-amber-500" />
+            <CategoryCard Title="Cuarteto" Emoji="🕺" Link="@($"/country/{Uri.EscapeDataString(CountryName)}/genre/cuarteto")" BackgroundClass="bg-gradient-to-br from-purple-500 to-indigo-600" />
+            <CategoryCard Title="Tango" Emoji="🎩" Link="@($"/country/{Uri.EscapeDataString(CountryName)}/genre/tango")" BackgroundClass="bg-gradient-to-br from-gray-700 to-slate-900" />
+            <CategoryCard Title="Salsa" Emoji="🎺" Link="@($"/country/{Uri.EscapeDataString(CountryName)}/genre/salsa")" BackgroundClass="bg-gradient-to-br from-red-400 to-rose-600" />
+            <CategoryCard Title="Deportes" Emoji="⚽" Link="@($"/country/{Uri.EscapeDataString(CountryName)}/genre/sports")" BackgroundClass="bg-gradient-to-br from-green-400 to-emerald-600" />
+            <CategoryCard Title="Clásica" Emoji="🎻" Link="@($"/country/{Uri.EscapeDataString(CountryName)}/genre/classical")" BackgroundClass="bg-gradient-to-br from-slate-600 to-zinc-800" />
+        </div>
+    </section>
+
+    <!-- Noticias -->
+    <section>
+        <h2 class="text-2xl font-bold text-white mb-4 px-1">Noticias 📰</h2>
+        <div class="flex overflow-x-auto gap-4 pb-4 snap-x snap-mandatory hide-scrollbar">
+            @if (newsStations == null)
+            {
+                @for (int i = 0; i < 6; i++) { <div class="animate-pulse bg-white/5 rounded-2xl w-40 md:w-48 aspect-square flex-shrink-0 snap-start"></div> }
+            }
+            else if (!newsStations.Any())
+            {
+                <span class="text-gray-500 italic px-2">No se encontraron noticias.</span>
+            }
+            else
+            {
+                @foreach (var station in newsStations)
+                {
+                    <div class="w-40 md:w-48 flex-shrink-0 snap-start">
+                        <RadioCard Station="station" PlaylistContext="newsStations" />
+                    </div>
+                }
+            }
+        </div>
+    </section>
+
+    <!-- Podcasts -->
+    <section>
+        <h2 class="text-2xl font-bold text-white mb-4 px-1">Podcasts y Charlas 🎙️</h2>
+        <div class="flex overflow-x-auto gap-4 pb-4 snap-x snap-mandatory hide-scrollbar">
+            @if (podcastStations == null)
+            {
+                @for (int i = 0; i < 6; i++) { <div class="animate-pulse bg-white/5 rounded-2xl w-40 md:w-48 aspect-square flex-shrink-0 snap-start"></div> }
+            }
+            else if (!podcastStations.Any())
+            {
+                <span class="text-gray-500 italic px-2">No se encontraron podcasts.</span>
+            }
+            else
+            {
+                @foreach (var station in podcastStations)
+                {
+                    <div class="w-40 md:w-48 flex-shrink-0 snap-start">
+                        <RadioCard Station="station" PlaylistContext="podcastStations" />
+                    </div>
+                }
+            }
+        </div>
+    </section>
+</div>
+
+<style>
+    .hide-scrollbar::-webkit-scrollbar { display: none; }
+    .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+</style>
+
+@code {
+    [Parameter]
+    public string CountryName { get; set; } = "";
+
+    private List<RadioStation>? musicStations;
+    private List<RadioStation>? newsStations;
+    private List<RadioStation>? podcastStations;
+
+    private CancellationTokenSource? _cts;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        await LoadDataAsync();
+    }
+
+    private async Task LoadDataAsync()
+    {
+        _cts?.Cancel();
+        _cts = new CancellationTokenSource();
+        var token = _cts.Token;
+
+        musicStations = null;
+        newsStations = null;
+        podcastStations = null;
+        StateHasChanged();
+
+        try
+        {
+            // Música / General (sin tag específico)
+            musicStations = await RadioApi.GetStationsByCountryAsync(CountryName, 40, null, token);
+            StateHasChanged();
+
+            // Noticias
+            newsStations = await RadioApi.GetStationsByCountryAsync(CountryName, 30, "news", token);
+            StateHasChanged();
+
+            // Podcasts / Talk
+            var podcasts = await RadioApi.GetStationsByCountryAsync(CountryName, 20, "podcast", token);
+            var talk = await RadioApi.GetStationsByCountryAsync(CountryName, 20, "talk", token);
+            podcastStations = podcasts.Concat(talk).DistinctBy(s => s.StationUuid).Take(30).ToList();
+            StateHasChanged();
+        }
+        catch (TaskCanceledException)
+        {
+            // Ignore
+        }
+    }
+
+    public void Dispose()
+    {
+        _cts?.Cancel();
+    }
+}

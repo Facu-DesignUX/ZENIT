@@ -17,7 +17,19 @@ public class PlayerStateService : IAsyncDisposable
     // UI State for mobile full-screen player
     public bool IsImmersiveMode { get; private set; }
 
+    public float Volume { get; private set; } = 1.0f;
+
     public event Action? OnStateChanged;
+
+    public async Task SetVolumeAsync(float volume)
+    {
+        Volume = volume;
+        NotifyStateChanged();
+        if (_objRef != null)
+        {
+            await _jsRuntime.InvokeVoidAsync("ZenitAudioPlayer.setVolume", volume);
+        }
+    }
 
     public PlayerStateService(IJSRuntime jsRuntime)
     {

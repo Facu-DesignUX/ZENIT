@@ -1,0 +1,20 @@
+<a href="@Link" class="relative group block w-40 md:w-48 aspect-square rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl hover:scale-105 transition-all duration-300 flex-shrink-0 snap-start cursor-pointer">
+    <!-- Fondo Gradiente -->
+    <div class="absolute inset-0 @BackgroundClass opacity-80 group-hover:opacity-100 transition-opacity"></div>
+    
+    <!-- Capa Oscura (Viñeta) -->
+    <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
+
+    <!-- Contenido -->
+    <div class="absolute inset-0 flex flex-col p-4 justify-between">
+        <span class="text-5xl drop-shadow-md mt-2">@Emoji</span>
+        <h3 class="text-white font-extrabold text-xl md:text-2xl tracking-tight drop-shadow-lg leading-tight">@Title</h3>
+    </div>
+</a>
+
+@code {
+    [Parameter] public string Title { get; set; } = "";
+    [Parameter] public string Emoji { get; set; } = "";
+    [Parameter] public string Link { get; set; } = "";
+    [Parameter] public string BackgroundClass { get; set; } = "bg-zenit-gradient";
+}

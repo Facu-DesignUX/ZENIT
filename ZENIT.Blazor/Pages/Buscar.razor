@@ -102,7 +102,6 @@
     {
         // Cancel previous request
         _cts?.Cancel();
-        _cts?.Dispose();
         
         if (string.IsNullOrWhiteSpace(_searchQuery))
         {

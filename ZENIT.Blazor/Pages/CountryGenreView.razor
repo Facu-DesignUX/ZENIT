@@ -1,0 +1,88 @@
+@page "/country/{CountryName}/genre/{GenreName}"
+@using ZENIT.Blazor.Models
+@using ZENIT.Blazor.Services
+@using ZENIT.Blazor.Components
+@inject RadioApiService RadioApi
+@implements IDisposable
+
+<PageTitle>@GenreName en @CountryName - ZENIT</PageTitle>
+
+<div class="flex flex-col gap-8 pb-10 w-full max-w-7xl mx-auto px-2 md:px-6">
+    <!-- Header -->
+    <div class="flex items-center gap-4 mt-4 mb-4">
+        <a href="/country/@Uri.EscapeDataString(CountryName)" class="p-2 rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors shrink-0">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+        </a>
+        <div class="flex flex-col">
+            <h1 class="text-3xl md:text-5xl font-extrabold text-white drop-shadow-md tracking-tight truncate capitalize">@GenreName</h1>
+            <span class="text-lg md:text-xl text-gray-400 font-medium tracking-wide">en @CountryName</span>
+        </div>
+    </div>
+
+    <section>
+        @if (stations == null)
+        {
+            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+                @for (int i = 0; i < 15; i++) { <div class="animate-pulse bg-white/5 rounded-2xl aspect-square"></div> }
+            </div>
+        }
+        else if (!stations.Any())
+        {
+            <div class="flex flex-col items-center justify-center mt-20 text-center">
+                <span class="text-5xl mb-4">🎵</span>
+                <h3 class="text-2xl text-white font-bold mb-2">No hay resultados</h3>
+                <p class="text-gray-400">No pudimos encontrar emisoras de este género en @CountryName.</p>
+            </div>
+        }
+        else
+        {
+            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+                @foreach (var station in stations)
+                {
+                    <RadioCard Station="station" PlaylistContext="stations" />
+                }
+            </div>
+        }
+    </section>
+</div>
+
+@code {
+    [Parameter]
+    public string CountryName { get; set; } = "";
+
+    [Parameter]
+    public string GenreName { get; set; } = "";
+
+    private List<RadioStation>? stations;
+    private CancellationTokenSource? _cts;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        await LoadDataAsync();
+    }
+
+    private async Task LoadDataAsync()
+    {
+        _cts?.Cancel();
+        _cts = new CancellationTokenSource();
+        var token = _cts.Token;
+
+        stations = null;
+        StateHasChanged();
+
+        try
+        {
+            stations = await RadioApi.GetStationsByCountryAsync(CountryName, 60, GenreName.ToLowerInvariant(), token);
+            StateHasChanged();
+        }
+        catch (TaskCanceledException)
+        {
+            // Ignore
+        }
+    }
+
+    public void Dispose()
+    {
+        _cts?.Cancel();
+    }
+}
